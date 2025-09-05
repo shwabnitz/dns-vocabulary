@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulaire DNS et Sécurité - NDD Camp Paris</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .controls {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .search-box:focus {
+            border-color: #667eea;
+        }
+        .category-filter {
+            margin-top: 10px;
+        }
+        .category-btn {
+            background: #e9ecef;
+            border: none;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        .vocabulary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .vocabulary-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .vocabulary-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+        }
+        .vocabulary-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .category-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .german-term {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .french-term {
+            font-weight: 600;
+            color: #27ae60;
+        }
+        .context {
+            font-style: italic;
+            color: #666;
+            font-size: 14px;
+        }
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+        @media print {
+            .controls, .print-btn { display: none; }
+            body { margin: 0; background: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Vocabulaire DNS et Sécurité</h1>
+            <p>NDD Camp Paris - 11h15-12h30 : Sécurité des noms de domaine</p>
+        </div>
+        
+        <div class="controls">
+            <input type="text" class="search-box" placeholder="Rechercher un terme..." id="searchInput">
+            <div class="category-filter">
+                <button class="category-btn active" onclick="filterCategory('all')">Tous</button>
+                <button class="category-btn" onclick="filterCategory('dns')">DNS</button>
+                <button class="category-btn" onclick="filterCategory('security')">Sécurité</button>
+                <button class="category-btn" onclick="filterCategory('icann')">ICANN</button>
+                <button class="category-btn" onclick="filterCategory('legal')">Juridique</button>
+                <button class="category-btn" onclick="filterCategory('technical')">Technique</button>
+            </div>
+        </div>
+
+        <table class="vocabulary-table" id="vocabularyTable">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Deutsch</th>
+                    <th style="width: 25%">Français</th>
+                    <th style="width: 35%">Contexte/Exemple</th>
+                    <th style="width: 15%">Catégorie</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-category="dns">
+                    <td class="german-term">Domain Name System</td>
+                    <td class="french-term">Système de noms de domaine</td>
+                    <td class="context">Système hiérarchique de résolution des noms de domaine</td>
+                    <td><span class="category-tag">DNS</span></td>
+                </tr>
+                <tr data-category="dns">
+                    <td class="german-term">Domainname (NDD)</td>
+                    <td class="french-term">Nom de domaine</td>
+                    <td class="context">Identifiant unique d'un site web (ex: exemple.fr)</td>
+                    <td><span class="category-tag">DNS</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Abgelaufene Domains</td>
+                    <td class="french-term">Domaines expirés</td>
+                    <td class="context">Domaines non renouvelés exploités pour créer des réseaux de faux sites</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">DNS-Missbrauch</td>
+                    <td class="french-term">Abus DNS</td>
+                    <td class="context">Utilisation malveillante du système DNS pour des activités illicites</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="technical">
+                    <td class="german-term">DNS-Sinkhole</td>
+                    <td class="french-term">Puits DNS / Sinkhole DNS</td>
+                    <td class="context">Technique de redirection du trafic malveillant vers un serveur contrôlé</td>
+                    <td><span class="category-tag">Technique</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Cybersquatting</td>
+                    <td class="french-term">Cybersquattage</td>
+                    <td class="context">Enregistrement abusif de domaines similaires à des marques connues</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="icann">
+                    <td class="german-term">ICANN</td>
+                    <td class="french-term">ICANN</td>
+                    <td class="context">Internet Corporation for Assigned Names and Numbers</td>
+                    <td><span class="category-tag">ICANN</span></td>
+                </tr>
+                <tr data-category="legal">
+                    <td class="german-term">UDRP</td>
+                    <td class="french-term">UDRP</td>
+                    <td class="context">Uniform Domain-Name Dispute-Resolution Policy</td>
+                    <td><span class="category-tag">Juridique</span></td>
+                </tr>
+                <tr data-category="legal">
+                    <td class="german-term">SYRELI</td>
+                    <td class="french-term">SYRELI</td>
+                    <td class="context">Système de résolution extrajudiciaire des litiges Internet (.fr)</td>
+                    <td><span class="category-tag">Juridique</span></td>
+                </tr>
+                <tr data-category="icann">
+                    <td class="german-term">Neue gTLD</td>
+                    <td class="french-term">Nouveaux gTLD</td>
+                    <td class="context">Nouvelles extensions génériques de domaines</td>
+                    <td><span class="category-tag">ICANN</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Bedrohungslage</td>
+                    <td class="french-term">Paysage des menaces</td>
+                    <td class="context">État actuel des risques et vulnérabilités en cybersécurité</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="technical">
+                    <td class="german-term">KI-basierte Lösungen</td>
+                    <td class="french-term">Solutions basées sur l'IA</td>
+                    <td class="context">Technologies d'intelligence artificielle pour la détection d'abus</td>
+                    <td><span class="category-tag">Technique</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Incident Response</td>
+                    <td class="french-term">Réponse aux incidents</td>
+                    <td class="context">Gestion et résolution des incidents de sécurité</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="technical">
+                    <td class="german-term">Pre-Release</td>
+                    <td class="french-term">Pré-publication</td>
+                    <td class="context">Phase avant la libération publique d'un domaine expiré</td>
+                    <td><span class="category-tag">Technique</span></td>
+                </tr>
+                <tr data-category="icann">
+                    <td class="german-term">Eigentumsdaten</td>
+                    <td class="french-term">Données de propriété</td>
+                    <td class="context">Informations sur les propriétaires de domaines (WHOIS)</td>
+                    <td><span class="category-tag">ICANN</span></td>
+                </tr>
+                <tr data-category="icann">
+                    <td class="german-term">Compliance-Team</td>
+                    <td class="french-term">Équipe de conformité</td>
+                    <td class="context">Équipe chargée de faire respecter les politiques ICANN</td>
+                    <td><span class="category-tag">ICANN</span></td>
+                </tr>
+                <tr data-category="icann">
+                    <td class="german-term">GAC</td>
+                    <td class="french-term">GAC</td>
+                    <td class="context">Comité consultatif gouvernemental (Governmental Advisory Committee)</td>
+                    <td><span class="category-tag">ICANN</span></td>
+                </tr>
+                <tr data-category="legal">
+                    <td class="german-term">DSA</td>
+                    <td class="french-term">DSA</td>
+                    <td class="context">Digital Services Act - Réglementation européenne</td>
+                    <td><span class="category-tag">Juridique</span></td>
+                </tr>
+                <tr data-category="legal">
+                    <td class="german-term">NIS2</td>
+                    <td class="french-term">NIS2</td>
+                    <td class="context">Network and Information Systems Directive 2</td>
+                    <td><span class="category-tag">Juridique</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Gefälschte Websites</td>
+                    <td class="french-term">Sites web frauduleux</td>
+                    <td class="context">Sites créés pour tromper les utilisateurs</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Massives Netzwerk</td>
+                    <td class="french-term">Réseau massif</td>
+                    <td class="context">Infrastructure étendue de sites malveillants</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="technical">
+                    <td class="german-term">LLM-Halluzination</td>
+                    <td class="french-term">Hallucination LLM</td>
+                    <td class="context">Génération erronée de noms de domaine par les IA</td>
+                    <td><span class="category-tag">Technique</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Online-Verstöße</td>
+                    <td class="french-term">Violations en ligne</td>
+                    <td class="context">Infractions commises sur Internet</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="security">
+                    <td class="german-term">Präventionspraktiken</td>
+                    <td class="french-term">Pratiques de prévention</td>
+                    <td class="context">Mesures proactives contre les abus</td>
+                    <td><span class="category-tag">Sécurité</span></td>
+                </tr>
+                <tr data-category="technical">
+                    <td class="german-term">Registermaßnahmen</td>
+                    <td class="french-term">Mesures de registre</td>
+                    <td class="context">Actions entreprises par les opérateurs de registre</td>
+                    <td><span class="category-tag">Technique</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">📄 Imprimer</button>
+
+    <script>
+        // Fonction de recherche
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#vocabularyTable tbody tr');
+            
+            rows.forEach(row => {
+                const german = row.cells[0].textContent.toLowerCase();
+                const french = row.cells[1].textContent.toLowerCase();
+                const context = row.cells[2].textContent.toLowerCase();
+                
+                if (german.includes(searchTerm) || french.includes(searchTerm) || context.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Fonction de filtrage par catégorie
+        function filterCategory(category) {
+            const rows = document.querySelectorAll('#vocabularyTable tbody tr');
+            const buttons = document.querySelectorAll('.category-btn');
+            
+            // Mise à jour des boutons actifs
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            rows.forEach(row => {
+                if (category === 'all' || row.dataset.category === category) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Fonction pour ajouter de nouveaux termes (pour extension future)
+        function addTerm(german, french, context, category) {
+            const tbody = document.querySelector('#vocabularyTable tbody');
+            const newRow = tbody.insertRow();
+            newRow.dataset.category = category;
+            
+            newRow.innerHTML = `
+                <td class="german-term">${german}</td>
+                <td class="french-term">${french}</td>
+                <td class="context">${context}</td>
+                <td><span class="category-tag">${category.charAt(0).toUpperCase() + category.slice(1)}</span></td>
+            `;
+        }
+    </script>
+</body>
+</html>
